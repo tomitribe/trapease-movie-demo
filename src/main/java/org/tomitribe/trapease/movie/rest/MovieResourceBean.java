@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.status;
 
 @ApplicationScoped
@@ -90,7 +91,11 @@ public class MovieResourceBean implements MovieResource {
     }
 
     @Override
-    public void delete(final String id) {
-        Optional.ofNullable(movies.get(id)).ifPresent(movie -> movies.remove(id));
+    public Response delete(final String id) {
+        return Optional.ofNullable(movies.get(id))
+                       .map(movie -> movies.remove(id))
+                       .map(movie -> status(NO_CONTENT))
+                       .orElse(status(NOT_FOUND))
+                       .build();
     }
 }
