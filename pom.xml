@@ -87,7 +87,9 @@
         <artifactId>trapease-maven-plugin</artifactId>
         <version>${version.trapease}</version>
         <configuration>
+          <generateModel>true</generateModel>
           <modelPackage>org.tomitribe.trapease.movie.model</modelPackage>
+          <generateResources>true</generateResources>
           <resourcePackage>org.tomitribe.trapease.movie.rest</resourcePackage>
           <generateModel>true</generateModel>
           <generateResources>true</generateResources>
