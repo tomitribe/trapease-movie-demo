@@ -16,6 +16,7 @@
  */
 package org.tomitribe.trapease.movie.model;
 
+import org.tomitribe.api.Filter;
 import org.tomitribe.api.Model;
 import org.tomitribe.api.Resource;
 
@@ -24,6 +25,7 @@ import org.tomitribe.api.Resource;
 class MovieModel {
     @Model(id = true, operation = Model.Operation.READ)
     private String id;
+    @Model(filter = @Filter(name = "title", multiple = false))
     private String title;
     private String director;
     private String genre;
