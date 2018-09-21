@@ -89,6 +89,8 @@
         <configuration>
           <modelPackage>org.tomitribe.trapease.movie.model</modelPackage>
           <resourcePackage>org.tomitribe.trapease.movie.rest</resourcePackage>
+          <generateModel>true</generateModel>
+          <generateResources>true</generateResources>
         </configuration>
         <executions>
           <execution>
