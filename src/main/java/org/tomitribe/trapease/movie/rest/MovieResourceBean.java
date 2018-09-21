@@ -90,7 +90,8 @@ public class MovieResourceBean implements MovieResource {
     }
 
     @Override
-    public void delete(final String id) {
+    public Response delete(final String id) {
         Optional.ofNullable(movies.get(id)).ifPresent(movie -> movies.remove(id));
+        return Response.ok().build();
     }
 }
