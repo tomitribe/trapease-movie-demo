@@ -16,20 +16,14 @@
  */
 package org.tomitribe.trapease.movie.model;
 
-import org.tomitribe.api.Filter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.tomitribe.api.Model;
-import org.tomitribe.api.Resource;
 
-@Model
-@Resource
-class MovieModel {
-    @Model(id = true, operation = Model.Operation.READ)
-    private String id;
-    @Model(filter = @Filter(name = "title", multiple = false))
-    private String title;
-    private String director;
-    private String genre;
-    private int year;
-    private int rating;
-    private CredentialModel credential;
+@Schema(description = "The passwords and secrets that authorize the use of an account")
+public class CredentialModel {
+    @Model(operation = {Model.Operation.CREATE})
+    private String password;
+    @Model(operation = {Model.Operation.CREATE})
+    private String passwordConfirmation;
+
 }
