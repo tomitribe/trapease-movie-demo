@@ -93,6 +93,9 @@
           <resourcePackage>org.tomitribe.trapease.movie.rest</resourcePackage>
           <generateModel>true</generateModel>
           <generateResources>true</generateResources>
+          <generateClient>true</generateClient>
+          <generateCmd>true</generateCmd>
+          <clientName>MovieClient</clientName>
         </configuration>
         <executions>
           <execution>
@@ -123,10 +126,28 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-mp-client</artifactId>
+      <version>3.2.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.airlift</groupId>
+      <artifactId>airline</artifactId>
+      <version>0.8</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.tomee</groupId>
       <artifactId>javaee-api</artifactId>
       <version>7.0-1</version>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.json</groupId>
+      <artifactId>javax.json-api</artifactId>
+      <version>1.1</version>
     </dependency>
 
     <dependency>
@@ -143,5 +164,30 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.johnzon</groupId>
+      <artifactId>johnzon-jaxrs</artifactId>
+      <version>1.1.8-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.shrinkwrap.resolver</groupId>
+      <artifactId>shrinkwrap-resolver-api-maven</artifactId>
+      <version>2.2.6</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.shrinkwrap.resolver</groupId>
+      <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+      <version>2.2.6</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

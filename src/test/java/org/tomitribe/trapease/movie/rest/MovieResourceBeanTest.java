@@ -17,6 +17,7 @@
 package org.tomitribe.trapease.movie.rest;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -26,83 +27,51 @@ import org.junit.runner.RunWith;
 import org.tomitribe.trapease.movie.model.CreateMovie;
 import org.tomitribe.trapease.movie.model.Movie;
 import org.tomitribe.trapease.movie.model.UpdateMovie;
+import org.tomitribe.trapease.movie.rest.client.MovieClient;
+import org.tomitribe.trapease.movie.rest.client.base.ClientConfiguration;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.net.URL;
 
-import static javax.ws.rs.client.Entity.json;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(Arquillian.class)
+@RunAsClient
 public class MovieResourceBeanTest {
-    @Deployment
+    @Deployment(testable = false)
     public static WebArchive webApp() {
         return ShrinkWrap.create(WebArchive.class)
-                         .addClass(Movie.class)
-                         .addClass(CreateMovie.class)
-                         .addClass(UpdateMovie.class)
-                         .addClass(MovieResource.class)
-                         .addClass(MovieResourceBean.class);
+                .addClass(Movie.class)
+                .addClass(CreateMovie.class)
+                .addClass(UpdateMovie.class)
+                .addClass(MovieResource.class)
+                .addClass(MovieResourceBean.class);
     }
 
     @Test
     public void testMovies(final @ArquillianResource URL base) throws Exception {
-        final Client client = ClientBuilder.newBuilder().build();
-
         final CreateMovie createMovie =
                 CreateMovie.builder()
-                           .title("The Terminator")
-                           .director("James Cameron")
-                           .genre("Action")
-                           .year(1984)
-                           .rating(8)
-                           .build();
+                        .title("The Terminator")
+                        .director("James Cameron")
+                        .genre("Action")
+                        .year(1984)
+                        .rating(8)
+                        .build();
 
-        final Response createResponse =
-                client.target(base.toURI())
-                      .path("movie")
-                      .request()
-                      .post(json(createMovie));
-        assertEquals(201, createResponse.getStatus());
-        assertNotNull(createResponse.getLocation());
+        MovieClient movieClient = new MovieClient(ClientConfiguration.builder().url(base).verbose(true).build());
+        Movie movie = movieClient.movie().create(createMovie);
 
-        final Movie movie =
-                ClientBuilder.newBuilder().build().target(createResponse.getLocation()).request().get(Movie.class);
-        assertNotNull(movie);
-        assertEquals("The Terminator", movie.getTitle());
-        assertEquals("James Cameron", movie.getDirector());
-        assertEquals("Action", movie.getGenre());
-        assertEquals(1984, movie.getYear());
-        assertEquals(8, movie.getRating());
+        UpdateMovie updateMovie = movie.toUpdate().year(1985).build();
+        Movie updatedMovie = movieClient.movie().update(movie.getId(), updateMovie);
 
-        final Response updateResponse =
-                client.target(base.toURI())
-                      .path("movie/{id}")
-                      .resolveTemplate("id", movie.getId())
-                      .request()
-                      .put(json(movie.toUpdate().rating(9).build()));
-        assertEquals(200, updateResponse.getStatus());
+        assertEquals(1985, updatedMovie.getYear());
 
-        final Movie updatedMovie = updateResponse.readEntity(Movie.class);
-        assertNotNull(updatedMovie);
-        assertEquals(9, updatedMovie.getRating());
+        Response delete = movieClient.movie().delete(updatedMovie.getId());
 
-        final Response deleteResponse =
-                client.target(base.toURI())
-                      .path("movie/{id}")
-                      .resolveTemplate("id", movie.getId())
-                      .request()
-                      .delete();
-        assertEquals(204, deleteResponse.getStatus());
+        assertEquals(204, delete.getStatus());
 
-        assertEquals(404, client.target(base.toURI())
-                                .path("movie{id}")
-                                .resolveTemplate("id", movie.getId())
-                                .request()
-                                .get()
-                                .getStatus());
+        movieClient.movie().read(updatedMovie.getId());
+
     }
 }
