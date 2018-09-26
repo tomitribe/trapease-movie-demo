@@ -62,7 +62,7 @@ public class MovieResourceBean implements MovieResource {
                                       .resolveTemplate("id", newMovie.getId())
                                       .build();
 
-        return Response.created(createdURI).build();
+        return Response.created(createdURI).entity(newMovie).build();
     }
 
     @Override
