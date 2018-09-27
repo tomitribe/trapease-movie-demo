@@ -20,7 +20,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.tomitribe.trapease.movie.model.BulkMovieResult;
 import org.tomitribe.trapease.movie.model.CreateMovie;
 import org.tomitribe.trapease.movie.model.Movie;
-import org.tomitribe.trapease.movie.model.Movies;
+import org.tomitribe.trapease.movie.model.MovieFilter;
+import org.tomitribe.trapease.movie.model.MovieResult;
 import org.tomitribe.trapease.movie.model.UpdateMovie;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -71,14 +72,20 @@ public class MoviesResourceBean implements MoviesResource {
 
     @Override
     public Response bulkDelete(@Parameter(description = "Set of Movie ids to delete", required = true) List<String> ids) {
-        return null;
+        if(ids != null){
+            ids.forEach(id -> {
+                moviesRepository.remove(id);
+            });
+        }
+        return Response.ok().entity(new BulkMovieResult(null)).build();
     }
 
     @Override
     public Response readAll() {
-        Movies movies = Movies.builder()
+        MovieResult movies = MovieResult.builder()
                 .items(moviesRepository.values())
                 .total(Long.valueOf(moviesRepository.values().size()))
+                .filters(MovieFilter.builder().title("anc").build())
                 .build();
         return Response.ok().entity(movies).build();
     }

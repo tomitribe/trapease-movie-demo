@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tomitribe.trapease.movie.model.CreateMovie;
 import org.tomitribe.trapease.movie.model.Movie;
-import org.tomitribe.trapease.movie.model.Movies;
+import org.tomitribe.trapease.movie.model.MovieResult;
 import org.tomitribe.trapease.movie.model.UpdateMovie;
 import org.tomitribe.trapease.movie.rest.client.MovieClient;
 import org.tomitribe.trapease.movie.rest.client.base.ClientConfiguration;
@@ -83,16 +83,17 @@ public class MovieResourceBeanCmdTest {
     public void testMoviesResource(final @ArquillianResource URL base) throws Exception {
         cmd("movies bulk-create --title \"The Terminator\" --director \"James Cameron\" --genre Action --year 1084 --rating 8", base);
 
+        cmd("movies read-all", base);
+
         MovieClient movieClient = new MovieClient(ClientConfiguration.builder().url(base).verbose(true).build());
-        Movies movies = movieClient.movies().readAll();
-        assertEquals(new Long(1), movies.getTotal());
+        MovieResult result = movieClient.movies().readAll();
+        assertEquals(new Long(1), result.getTotal());
+        assertEquals(1084, result.getItems().stream().findFirst().get().getYear());
 
-//        cmd("movies bulk-update 1 --title \"The Terminator\" --director \"James Cameron\" --genre Action --year 1085 --rating 8", base);
+        cmd("movies bulk-delete --ids 1", base);
 
-        cmd("movie readAll", base);
-
-//        cmd("movie bulk-delete 1", base);
-
+        result = movieClient.movies().readAll();
+        assertEquals(0, result.getItems().size());
     }
 
     private static void cmd(final String cmd, final URL url) {
