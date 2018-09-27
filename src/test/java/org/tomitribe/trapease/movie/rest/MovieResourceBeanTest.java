@@ -17,7 +17,6 @@
 package org.tomitribe.trapease.movie.rest;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -36,9 +35,8 @@ import java.net.URL;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Arquillian.class)
-@RunAsClient
 public class MovieResourceBeanTest {
-    @Deployment(testable = false)
+    @Deployment
     public static WebArchive webApp() {
         return ShrinkWrap.create(WebArchive.class)
                 .addClass(Movie.class)
@@ -60,18 +58,19 @@ public class MovieResourceBeanTest {
                         .build();
 
         MovieClient movieClient = new MovieClient(ClientConfiguration.builder().url(base).verbose(true).build());
-        Movie movie = movieClient.movie().create(createMovie);
+        Movie createdMovie = movieClient.movie().create(createMovie);
 
-        UpdateMovie updateMovie = movie.toUpdate().year(1985).build();
-        Movie updatedMovie = movieClient.movie().update(movie.getId(), updateMovie);
+        UpdateMovie updateMovie = createdMovie.toUpdate().year(1985).build();
+        Movie updatedMovie = movieClient.movie().update(createdMovie.getId(), updateMovie);
 
         assertEquals(1985, updatedMovie.getYear());
+
+        Movie readMovie = movieClient.movie().read(updatedMovie.getId());
+
+        assertEquals("1", readMovie.getId());
 
         Response delete = movieClient.movie().delete(updatedMovie.getId());
 
         assertEquals(204, delete.getStatus());
-
-        movieClient.movie().read(updatedMovie.getId());
-
     }
 }
